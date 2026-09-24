@@ -2,7 +2,8 @@
 name = "msisim"
 version = "0.0.1"
 
-authors = [{ name = "Martin Metodiev", email = "m.d.metodiev7@gmail.com" }, 
+authors = [
+{ name = "Martin Metodiev", email = "m.d.metodiev7@gmail.com" }, 
 { name = "Yuting Lu", email = "yuting.lu@tum.de"},
 { name = "Yuchen Xiang", email = "yuchen.xiang11@imperial.ac.uk"}
 ]
