@@ -133,30 +133,3 @@ class Tissue:
         ax.plot(self.nuclei[:, 0], self.nuclei[:, 1], "w.", ms=1)
         ax.set_xlabel(r"$x$ ($\mu$m)"); ax.set_ylabel(r"$y$ ($\mu$m)")
         return ax
-
-
-#tissue types
-def types_stripes(tissue: Tissue, period_um: float, n_types: int = 2, axis: str = "x") -> np.ndarray:
-    coord = tissue.nuclei[:, 0 if axis == "x" else 1]
-    return np.floor(coord / period_um).astype(int) % n_types
-
-
-def types_checkerboard(tissue: Tissue, period_um: float, n_types: int = 2) -> np.ndarray:
-    ix = np.floor(tissue.nuclei[:, 0] / period_um).astype(int)
-    iy = np.floor(tissue.nuclei[:, 1] / period_um).astype(int)
-    return (ix + iy) % n_types
-
-
-def types_random_field(tissue: Tissue, correlation_um: float, proportions: Sequence[float],
-                       seed: int = 0) -> np.ndarray:
-    """Smooth Gaussian random field thresholded at quantiles -> contiguous
-    tissue domains with given type proportions (e.g. tumour / stroma)."""
-    rng = np.random.default_rng(seed)
-    g = tissue.grid
-    field = ndimage.gaussian_filter(rng.standard_normal(g.shape), correlation_um / g.dx)
-    r = np.clip(np.round(tissue.nuclei[:, 1] / g.dx).astype(int), 0, g.ny - 1)
-    c = np.clip(np.round(tissue.nuclei[:, 0] / g.dx).astype(int), 0, g.nx - 1)
-    vals = field[r, c]
-    p = np.asarray(proportions, float)
-    edges = np.quantile(vals, np.cumsum(p)[:-1] / p.sum())
-    return np.searchsorted(edges, vals)
